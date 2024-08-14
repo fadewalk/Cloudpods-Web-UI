@@ -6,10 +6,10 @@ const loginLogo = require('@scope/images/cloudpod_login_logo.png')
 export default {
   state: {
     companyInfo: {
-      copyright: 'Made with ❤ Cloudpods',
+      copyright: 'Made with ❤ UbiquantSRE',
       logo,
       loginLogo,
-      name: 'OneCloud',
+      name: 'Ubiquant',
     },
     workflow: {
       statistics: {
