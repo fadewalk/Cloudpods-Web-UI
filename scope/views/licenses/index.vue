@@ -12,6 +12,7 @@
       <div>
         <div class="d-flex mb-3 mt-2">
           <div class="license-label flex-grow-0 flex-shrink-0">{{$t('scope.text_146')}}</div>
+          <!-- <div class="flex-fill">Cloudpods</div> -->
           <div class="flex-fill">Cloudpods</div>
         </div>
         <div class="d-flex mb-3">
@@ -42,8 +43,8 @@ export default {
   },
   data () {
     return {
-      email: 'info@yunion.cn',
-      copyright: '北京云联壹云技术有限公司',
+      email: 'ylwen@ubiquant.',
+      copyright: 'Ubiquant',
     }
   },
   computed: {
