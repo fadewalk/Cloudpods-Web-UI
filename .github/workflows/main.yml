@@ -5,27 +5,26 @@ on:
     - cron: '*/5 * * * *'  # 每天午夜运行
 
 jobs:
-  sync:
+  sync-release-branches:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Sync with upstream
-        run: |
-          git config --global user.email "fadewalk@163.com"
-          git config --global user.name "fadewalk"
-          git remote add upstream https://github.com/yunionio/dashboard.git
-          git fetch upstream
-          git rebase upstream/master
-          git push origin master --force
-                  
-          # 获取上游仓库的所有分支名称
-          mapfile -t branches < <(git ls-remote --refs --heads upstream | cut -d/ -f3)
-  
-          # 遍历所有分支并同步
-          for branch in "${branches[@]}"; do
-            echo "Syncing branch: $branch"
-            git fetch upstream
-            git checkout "$branch" || git checkout --orphan "$branch"
-            git rebase upstream/"$branch"
-            git push origin "$branch" --force
-          done
+    - name: Checkout source code
+      uses: actions/checkout@v2
+
+    - name: Fetch all branches from upstream
+      run: |
+        git remote add upstream https://github.com/yunionio/dashboard.git || true  # 添加上游仓库，如果已存在则忽略错误
+        git fetch --all
+
+    - name: Sync release branches
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        # 列出所有看起来像是 release 分支的上游分支
+        for branch in $(git branch -r | grep 'upstream/release-'); do
+          branch_name=${branch##*/}
+          echo "Syncing release branch: $branch_name"
+          git checkout "$branch_name" || git checkout --orphan "$branch_name"
+          git rebase "upstream/$branch_name"
+          git push origin "$branch_name" --force
+        done
