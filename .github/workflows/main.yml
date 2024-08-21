@@ -1,0 +1,31 @@
+name: Sync with upstream
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'  # 每天午夜运行
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Sync with upstream
+        run: |
+          git config --global user.email "fadewalk@163.com"
+          git config --global user.name "fadewalk"
+          git remote add upstream https://github.com/yunionio/dashboard.git
+          git fetch upstream
+          git rebase upstream/master
+          git push origin master --force
+                  
+          # 获取上游仓库的所有分支名称
+          mapfile -t branches < <(git ls-remote --refs --heads upstream | cut -d/ -f3)
+  
+          # 遍历所有分支并同步
+          for branch in "${branches[@]}"; do
+            echo "Syncing branch: $branch"
+            git fetch upstream
+            git checkout "$branch" || git checkout --orphan "$branch"
+            git rebase upstream/"$branch"
+            git push origin "$branch" --force
+          done
